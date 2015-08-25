@@ -5,8 +5,6 @@
 #include <vector>
 #include <algorithm>
 
-#include <iostream>
-
 namespace pseudosem {
     namespace detail {
         // Trim start and end of a string, removing any of the given characters.
