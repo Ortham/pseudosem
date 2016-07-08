@@ -5,6 +5,7 @@ Pseudosem is a header-only version string comparison library, written in C++11, 
 
 * Leading zeroes (eg. `0.05.1`)
 * Arbitrary number of release version parts (eg. `1.2.3.4.5`)
+* Non-numeric release version parts (eg. `1.0a`, `1.0z.5`)
 * Space, colon, hyphen and underscore prerelease separators (eg. `1.0.0 alpha:1-2_3`)
 * Case insensitivity
 
@@ -44,10 +45,4 @@ mkdir build
 cd build
 cmake ..
 ./tests
-```
-
-If CMake can't find Google Test, set its root directory by passing `GTEST_ROOT`:
-
-```
-cmake .. -DGTEST_ROOT=<path>
 ```

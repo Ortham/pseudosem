@@ -275,7 +275,7 @@ TEST(Extended, Separators) {
     EXPECT_EQ(0, pseudosem::compare(version2, version1));
 }
 
-TEST(Extended, NoSeparators) {
+TEST(Extended, lettersAfterReleaseVersionNumbersWithNoSeparatorShouldBeTreatedAsPartOfTheReleaseVersion) {
     std::string version1, version2;
 
     version1 = std::string("1.0.0a");
@@ -283,17 +283,37 @@ TEST(Extended, NoSeparators) {
     EXPECT_GT(0, pseudosem::compare(version1, version2));
     EXPECT_LT(0, pseudosem::compare(version2, version1));
 
+    version1 = std::string("1.0.0");
+    version2 = std::string("1.0.0a");
+    EXPECT_GT(0, pseudosem::compare(version1, version2));
+    EXPECT_LT(0, pseudosem::compare(version2, version1));
+
+    version1 = std::string("1.0.2");
+    version2 = std::string("1.0.4b");
+    EXPECT_GT(0, pseudosem::compare(version1, version2));
+    EXPECT_LT(0, pseudosem::compare(version2, version1));
+
+    version1 = std::string("1.0.0alpha.2");
+    version2 = std::string("1.0.0beta");
+    EXPECT_GT(0, pseudosem::compare(version1, version2));
+    EXPECT_LT(0, pseudosem::compare(version2, version1));
+
     version1 = std::string("1.0.0a");
-    version2 = std::string("1.0.0");
+    version2 = std::string("1.0.0a.5");
     EXPECT_GT(0, pseudosem::compare(version1, version2));
     EXPECT_LT(0, pseudosem::compare(version2, version1));
 }
 
-TEST(Extended, Case) {
+TEST(Extended, versionsShouldBeComparedCaseInsensitively) {
     std::string version1, version2;
 
     version1 = std::string("1.0.0-Alpha");
     version2 = std::string("1.0.0-beta");
+    EXPECT_GT(0, pseudosem::compare(version1, version2));
+    EXPECT_LT(0, pseudosem::compare(version2, version1));
+
+    version1 = std::string("1.0.0A");
+    version2 = std::string("1.0.0b");
     EXPECT_GT(0, pseudosem::compare(version1, version2));
     EXPECT_LT(0, pseudosem::compare(version2, version1));
 }

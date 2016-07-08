@@ -43,8 +43,27 @@ namespace pseudosem {
                                    std::back_inserter(releaseNumbers),
                                    toul);
 
-                    if (firstNonInt != temp.end())
-                        preReleaseStrings.assign(firstNonInt, temp.end());
+                    if (firstNonInt != temp.end()) {
+                        // If the firstNonInt is digits followed by one or more
+                        // non-digit characters, the digits need to be added as
+                        // a release number.
+
+                        auto isNotDigit = [](char c) {
+                            return !isdigit(c);
+                        };
+
+                        auto firstNonIntChar = std::find_if(begin(*firstNonInt),
+                                                            end(*firstNonInt),
+                                                            isNotDigit);
+                        if (firstNonIntChar != end(*firstNonInt)) {
+                            releaseNumbers.push_back(toul(
+                                firstNonInt->substr(0, std::distance(begin(*firstNonInt), firstNonIntChar))));
+
+                            *firstNonInt = firstNonInt->substr(std::distance(begin(*firstNonInt), firstNonIntChar));
+                        }
+
+                        releaseStrings.assign(firstNonInt, temp.end());
+                    }
                 }
 
                 // Now split the pre-release portion of the version string.
@@ -66,12 +85,19 @@ namespace pseudosem {
                 if (result != 0)
                     return result;
 
+                // Release numbers are the same. Check release strings.
+                result = compareStrings(releaseStrings, other.releaseStrings, true);
+
+                if (result != 0)
+                    return result;
+
                 // Release strings are the same. Check pre-release strings.
-                return compareStrings(preReleaseStrings, other.preReleaseStrings);
+                return compareStrings(preReleaseStrings, other.preReleaseStrings, false);
             }
 
         private:
             std::vector<unsigned long> releaseNumbers;
+            std::vector<std::string> releaseStrings;
             std::vector<std::string> preReleaseStrings;
 
             void normaliseReleaseNumbers(VersionParts& other) {
@@ -96,13 +122,17 @@ namespace pseudosem {
             }
 
             static int compareStrings(const std::vector<std::string>& strings1,
-                                      const std::vector<std::string>& strings2) {
-                       // If one strings is empty while the other does not, the latter is less.
+                                      const std::vector<std::string>& strings2,
+                                      bool areReleaseStrings) {
                 if (strings1.empty() != strings2.empty()) {
+                    int modifier = 1;
+                    if (areReleaseStrings)
+                        modifier = -1;
+
                     if (!strings1.empty())
-                        return -1;
+                        return modifier * -1;
                     else
-                        return 1;
+                        return modifier * 1;
                 }
 
                 if (strings1.empty())
