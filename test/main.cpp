@@ -2,6 +2,22 @@
 
 #include <gtest/gtest.h>
 
+TEST(Basic, anEmptyStringShouldBeEqualToAVersionOfZero) {
+    std::string version1;
+    std::string version2("0");
+
+    EXPECT_EQ(0, pseudosem::compare(version1, version2));
+    EXPECT_EQ(0, pseudosem::compare(version2, version1));
+}
+
+TEST(Basic, anEmptyStringShouldBeLessThanANonZeroVersion) {
+    std::string version1;
+    std::string version2("1");
+
+    EXPECT_GT(0, pseudosem::compare(version1, version2));
+    EXPECT_LT(0, pseudosem::compare(version2, version1));
+}
+
 TEST(Basic, SingleDigits) {
     std::string version1, version2;
     EXPECT_EQ(0, pseudosem::compare(version1, version2));
